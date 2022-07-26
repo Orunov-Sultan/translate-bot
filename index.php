@@ -96,9 +96,6 @@ if ($text == '/start' || $text == 'start'){
     $telegram->sendMessage($content);
 }
 
-file_put_contents(__DIR__.'/log.txt', print_r($telegram, 1));
-file_put_contents(__DIR__.'/call.txt', print_r($callback_message['reply_markup']['inline_keyboard'][0], 1));
-
 
 function getKeyboard($lang){
     global $telegram;

@@ -1,9 +1,6 @@
 <?php
 
-$host = 'localhost';
-$user = 'ci32018_tr';
-$pass = '1RTTin2R';
-$db = 'ci32018_tr';
+require_once 'config.php';
 
 $dsn = "mysql:host={$host};dbname={$db};charset=utf8";
 $opt = [
