@@ -3,6 +3,10 @@ require_once 'Telegram.php';
 require_once 'TelegramErrorLogger.php';
 require_once 'config.php';
 require_once 'db.php';
+require_once ('vendor/autoload.php');
+
+
+use \Dejurin\GoogleTranslateForFree;
 
 //https://api.telegram.org/bot(BOT_TOKEN)/setWebhook?url=https://yoursite.com/your_update.php
 
@@ -58,6 +62,38 @@ if ($text == '/start' || $text == 'start'){
         'callback_query_id' => $telegram->Callback_ID(),
         'text' => "Это уже активный язык"
     ]);
+}elseif (!empty($text)){
+
+    $data = getChatId($chat_id);
+
+    $source = ($data['lang'] == 'en') ? 'en' : 'ru';
+    $target = ($data['lang'] == 'ru') ? 'en' : 'ru';
+    $attempts = 5;
+
+    $tr = new GoogleTranslateForFree();
+    $result = $tr->translate($source, $target, $text, $attempts);
+
+    if ($result){
+
+        $content = [
+            'chat_id' => $chat_id,
+            'text' => $result
+        ];
+        $telegram->sendMessage($content);
+
+    }else{
+        $content = [
+            'chat_id' => $chat_id,
+            'text' => 'Упс... Я не смог перевести'
+        ];
+        $telegram->sendMessage($content);
+    }
+}else{
+    $content = [
+        'chat_id' => $chat_id,
+        'text' => 'Это бот-переводчик, поэтому он ожидает от вас текст для перевода...'
+    ];
+    $telegram->sendMessage($content);
 }
 
 file_put_contents(__DIR__.'/log.txt', print_r($telegram, 1));
